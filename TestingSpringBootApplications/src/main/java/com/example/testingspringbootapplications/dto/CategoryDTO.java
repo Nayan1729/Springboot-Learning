@@ -5,15 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TodoResponseDTO {
+public class CategoryDTO {
     private Long id;
-    private String title;
-    private boolean completed;
-    private Set<CategoryDTO> categories;
+    private String name;
 }

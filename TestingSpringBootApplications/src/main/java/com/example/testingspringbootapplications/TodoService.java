@@ -8,8 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Service layer for managing Todo business logic.
@@ -19,10 +21,12 @@ import java.util.Optional;
 public class TodoService {
 
     private final TodoRepository todoRepository;
+    private final CategoryRepository categoryRepository;
     private final TodoMapper todoMapper;
 
-    public TodoService(TodoRepository todoRepository, TodoMapper todoMapper) {
+    public TodoService(TodoRepository todoRepository, CategoryRepository categoryRepository, TodoMapper todoMapper) {
         this.todoRepository = todoRepository;
+        this.categoryRepository = categoryRepository;
         this.todoMapper = todoMapper;
     }
 
@@ -70,5 +74,14 @@ public class TodoService {
             todoRepository.delete(todo);
             return true;
         }).orElse(false);
+    }
+
+    public Optional<TodoResponseDTO> addCategoryToTodo(Long todoId, String categoryName) {
+        return todoRepository.findById(todoId).map(todo -> {
+            Category category = categoryRepository.findByName(categoryName)
+                    .orElseGet(() -> categoryRepository.save(Category.builder().name(categoryName).build()));
+            todo.getCategories().add(category);
+            return todoMapper.toDto(todoRepository.save(todo));
+        });
     }
 }
