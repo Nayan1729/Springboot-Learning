@@ -1,10 +1,17 @@
 package com.example.testingspringbootapplications;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service layer for managing Todo business logic.
+ * Integrates with TodoRepository for persistence.
+ */
 @Service
 public class TodoService {
 
@@ -14,10 +21,20 @@ public class TodoService {
         this.todoRepository = todoRepository;
     }
 
-    public List<Todo> getAllTodos() {
-        return todoRepository.findAll();
+    /**
+     * Retrieves a paginated list of todos.
+     * @param pageable pagination and sorting information
+     * @return a page of todos
+     */
+    public Page<Todo> getAllTodos(Pageable pageable) {
+        return todoRepository.findAll(pageable);
     }
 
+    /**
+     * Finds a specific todo by its unique ID.
+     * @param id the ID of the todo to find
+     * @return an Optional containing the found todo, or empty if not found
+     */
     public Optional<Todo> getTodoById(Long id) {
         return todoRepository.findById(id);
     }

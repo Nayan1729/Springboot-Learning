@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
- * Standardized error response DTO for the Todo API.
+ * Standardized error response DTO.
  */
 @Data
 @NoArgsConstructor

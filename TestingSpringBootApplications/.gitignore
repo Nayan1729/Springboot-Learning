@@ -19,6 +19,8 @@ target/
 *.iml
 *.ipr
 goals.md
+notes.md
+rest_api_notes.md
 
 
 ### NetBeans ###
