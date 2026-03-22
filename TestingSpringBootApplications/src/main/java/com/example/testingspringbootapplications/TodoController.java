@@ -1,5 +1,7 @@
 package com.example.testingspringbootapplications;
 
+import com.example.testingspringbootapplications.dto.TodoRequestDTO;
+import com.example.testingspringbootapplications.dto.TodoResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,26 +52,33 @@ public class TodoController {
      * @return a ResponseEntity containing the Page of Todo objects
      */
     @GetMapping
-    public ResponseEntity<Page<Todo>> getAllTodos(Pageable pageable) {
+    public ResponseEntity<Page<TodoResponseDTO>> getAllTodos(Pageable pageable) {
         return ResponseEntity.ok(todoService.getAllTodos(pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Todo> getTodoById(@PathVariable Long id) {
+    public ResponseEntity<TodoResponseDTO> getTodoById(@PathVariable Long id) {
         return todoService.getTodoById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Todo> createTodo(@Valid @RequestBody Todo todo) {
-        Todo createdTodo = todoService.createTodo(todo);
+    public ResponseEntity<TodoResponseDTO> createTodo(@Valid @RequestBody TodoRequestDTO todo) {
+        TodoResponseDTO createdTodo = todoService.createTodo(todo);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTodo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @Valid @RequestBody Todo todoDetails) {
+    public ResponseEntity<TodoResponseDTO> updateTodo(@PathVariable Long id, @Valid @RequestBody TodoRequestDTO todoDetails) {
         return todoService.updateTodo(id, todoDetails)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<TodoResponseDTO> patchTodo(@PathVariable Long id, @RequestBody TodoRequestDTO todoDetails) {
+        return todoService.patchTodo(id, todoDetails)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

@@ -1,5 +1,8 @@
 package com.example.testingspringbootapplications;
 
+import com.example.testingspringbootapplications.dto.TodoRequestDTO;
+import com.example.testingspringbootapplications.dto.TodoResponseDTO;
+import com.example.testingspringbootapplications.mapper.TodoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,9 +19,11 @@ import java.util.Optional;
 public class TodoService {
 
     private final TodoRepository todoRepository;
+    private final TodoMapper todoMapper;
 
-    public TodoService(TodoRepository todoRepository) {
+    public TodoService(TodoRepository todoRepository, TodoMapper todoMapper) {
         this.todoRepository = todoRepository;
+        this.todoMapper = todoMapper;
     }
 
     /**
@@ -26,8 +31,8 @@ public class TodoService {
      * @param pageable pagination and sorting information
      * @return a page of todos
      */
-    public Page<Todo> getAllTodos(Pageable pageable) {
-        return todoRepository.findAll(pageable);
+    public Page<TodoResponseDTO> getAllTodos(Pageable pageable) {
+        return todoRepository.findAll(pageable).map(todoMapper::toDto);
     }
 
     /**
@@ -35,19 +40,28 @@ public class TodoService {
      * @param id the ID of the todo to find
      * @return an Optional containing the found todo, or empty if not found
      */
-    public Optional<Todo> getTodoById(Long id) {
-        return todoRepository.findById(id);
+    public Optional<TodoResponseDTO> getTodoById(Long id) {
+        return todoRepository.findById(id).map(todoMapper::toDto);
     }
 
-    public Todo createTodo(Todo todo) {
-        return todoRepository.save(todo);
+    public TodoResponseDTO createTodo(TodoRequestDTO todoRequestDTO) {
+        Todo todo = todoMapper.toEntity(todoRequestDTO);
+        Todo savedTodo = todoRepository.save(todo);
+        return todoMapper.toDto(savedTodo);
     }
 
-    public Optional<Todo> updateTodo(Long id, Todo todoDetails) {
+    public Optional<TodoResponseDTO> updateTodo(Long id, TodoRequestDTO todoDetails) {
         return todoRepository.findById(id).map(todo -> {
             todo.setTitle(todoDetails.getTitle());
             todo.setCompleted(todoDetails.isCompleted());
-            return todoRepository.save(todo);
+            return todoMapper.toDto(todoRepository.save(todo));
+        });
+    }
+
+    public Optional<TodoResponseDTO> patchTodo(Long id, TodoRequestDTO todoDetails) {
+        return todoRepository.findById(id).map(todo -> {
+            todoMapper.updateEntityFromDto(todoDetails, todo);
+            return todoMapper.toDto(todoRepository.save(todo));
         });
     }
 
