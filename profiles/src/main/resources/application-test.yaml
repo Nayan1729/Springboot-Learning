@@ -1,0 +1,14 @@
+# test profile
+spring:
+  profiles:
+    active: test
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: test-password
+app:
+  api-key: "TEST-KEY-456"
+  features:
+    - dashboard
+  logging:
+    level: INFO

@@ -1,0 +1,15 @@
+# prod profile
+spring:
+  profiles:
+    active: prod
+  datasource:
+    url: jdbc:postgresql://prod-db:5432/proddb
+    username: ${PROD_DB_USER:admin}
+    password: ${PROD_DB_PASSWORD:secret}
+app:
+  api-key: ${PROD_API_KEY:DEFAULT_PROD_KEY}
+  features:
+    - dashboard
+    - reporting
+  logging:
+    level: ERROR
